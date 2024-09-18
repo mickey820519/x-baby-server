@@ -26,5 +26,8 @@
       }
     }
   },
-  "telegramBotToken": ""
+  "telegramBotToken": "",
+  "channelUsernameList": [
+    ""
+  ]
 }
