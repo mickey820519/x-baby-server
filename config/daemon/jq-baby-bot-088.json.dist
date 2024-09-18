@@ -1,0 +1,30 @@
+{
+  "log": {
+    "appenders": {
+      "console": {
+        "type": "console",
+        "layout": {
+          "type": "pattern",
+          "pattern": "%[[%d{yyyy-MM-dd hh:mm:ss}] [%p] [%c] -%] %m"
+        }
+      },
+      "exchangeBotDateFile": {
+        "type": "dateFile",
+        "filename": "logs/daemon/jq-baby-bot-088.log",
+        "pattern": "yyyy-MM-dd",
+        "layout": {
+          "type": "pattern",
+          "pattern": "[%d{yyyy-MM-dd hh:mm:ss}] [%p] [%c] - %m"
+        },
+        "numBackups": 14
+      }
+    },
+    "categories": {
+      "default": {
+        "appenders": ["console"],
+        "level": "info"
+      }
+    }
+  },
+  "telegramBotToken": ""
+}

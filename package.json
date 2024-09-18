@@ -1,0 +1,18 @@
+{
+  "name": "x-baby-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@dob/http": "github:mickey820519/dob-http#v1.0.1",
+    "@dob/log": "github:mickey820519/dob-log#v1.0.0",
+    "@dob/util": "github:mickey820519/dob-util#v1.0.0",
+    "canvas": "^2.11.2",
+    "node-telegram-bot-api": "^0.66.0"
+  }
+}
