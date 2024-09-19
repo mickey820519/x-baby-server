@@ -8,7 +8,7 @@
           "pattern": "%[[%d{yyyy-MM-dd hh:mm:ss}] [%p] [%c] -%] %m"
         }
       },
-      "exchangeBotDateFile": {
+      "jqBabyBot088DateFile": {
         "type": "dateFile",
         "filename": "logs/daemon/jq-baby-bot-088.log",
         "pattern": "yyyy-MM-dd",

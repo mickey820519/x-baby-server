@@ -1,3 +1,4 @@
+const moment = require('moment');
 const {
   DobLogApi
 } = require('@dob/log');
@@ -52,14 +53,18 @@ async function run() {
   botLogger.info('机器人启动...');
 
   // 创建canvas
-  const canvas = createCanvas(350, 262);
+  const canvas = createCanvas(350, 300);
   const ctx = canvas.getContext('2d');
   registerFont('./asset/font/Song.ttf', { family: 'Song' });
-  ctx.font = '24px Song';
   const backgroundImage = await loadImage('./asset/img/photo_msg_bg.png');
+  const winIcon = await loadImage('./asset/img/win.png');
+  const lostIcon = await loadImage('./asset/img/lost.png');
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
 
   // 宝贝推荐
   let maxRecommendId = null;
+  let messageCount = 0;
 
   while(true) {
 
@@ -88,11 +93,47 @@ async function run() {
       if(res.data.code === 0) {
         let recommendList = res.data.data.recommendList;
 
+        // //mock
+        // recommendList = [
+        //   {
+        //     id: 1,
+        //     match: {
+        //       league: {
+        //         nameCn: '英超'
+        //       },
+        //       homeTeam: {
+        //         nameCn: '曼联'
+        //       },
+        //       guestTeam: {
+        //         nameCn: '曼城'
+        //       }
+        //     },
+        //     minute: '45+1',
+        //     homeTeamG: 1,
+        //     guestTeamG: 0,
+        //     period: 1
+        //   }
+        // ];
+
         recommendList.sort(
           (a, b) => {
             return b.id - a.id;
           }
         );
+
+        //获取历史推荐
+        let getHistoryResponse = await jqBabyHttpClient.request(
+          {
+            method: 'GET',
+            url: '/v1/soccer/recommend/history',
+            params: {
+              searchAlgorithmId: 26,
+              offset: 0,
+              limit: 50
+            }
+          }
+        );
+        let historyRecommendList = getHistoryResponse.data.data.recommendList;
 
         botLogger.debug('推荐列表', recommendList);
 
@@ -102,20 +143,52 @@ async function run() {
             //清空画布
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             //背景图
-            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(backgroundImage, 0, 0, 350, 262);
             //文字
+            ctx.font = '30px Song';
+            let title = '进球宝贝免费提醒您：';
+            ctx.fillText(title, 30, 20);
+
+            ctx.font = '24px Song';
             let message = `${recommend.match.league.nameCn}\n`;
             message += `时间：${recommend.minute}\n`;
             message += `${recommend.match.homeTeam.nameCn}\n`;
             message += `${recommend.homeTeamG} : ${recommend.guestTeamG}\n`;
             message += `${recommend.match.guestTeam.nameCn}\n`;
             message += `推荐 ${recommend.period === 1 ? '半场' : '全场'} 继续进球`;
-            let messageWidth = ctx.measureText(message).width;
-            ctx.fillText(message, (canvas.width - messageWidth) / 2, 50);
+            ctx.fillText(message, 30, 60);
+            //战绩
+            let result = '今日：'
+            ctx.fillText(result, 30, 260);
+            let currentDate = moment();
+            let hour = currentDate.hour();
+
+            if(hour < 12) {
+              currentDate = currentDate.subtract(1, 'days');
+            }
+
+            let startTimestamp = moment(currentDate.format('YYYY-MM-DD 12:00:00')).unix();
+            let index = 0;
+            for(let historyRecommend of historyRecommendList) {
+              if(historyRecommend.match.startTimestamp < startTimestamp) {
+                break;
+              }
+
+              if(historyRecommend.goalResult === 1) {
+                ctx.drawImage(winIcon, 100 + index * 25, 270, 20, 20);
+                index++;
+              }
+              else if(historyRecommend.goalResult === 0) {
+                ctx.drawImage(lostIcon, 100 + index * 25, 270, 20, 20);
+                index++;
+              }
+            }
+            
             //生成图片
             let photoBuffer = canvas.toBuffer();
             //发送消息
             let channelUsernameList = jqBabyBot088ConfigData.channelUsernameList;
+            messageCount++;
             for(let channelUsername of channelUsernameList) {
               await bot.sendPhoto(
                 channelUsername,
@@ -126,6 +199,10 @@ async function run() {
                   contentType: 'image/png'
                 }
               );
+
+              if(messageCount % 5 !== 0) {
+                continue;
+              }
 
               message = '';
               message += '进球宝贝会员地址：http://43\\.154\\.166\\.77:23001/\n';
