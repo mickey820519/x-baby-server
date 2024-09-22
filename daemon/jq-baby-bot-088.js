@@ -129,7 +129,7 @@ async function run() {
             params: {
               searchAlgorithmId: 26,
               offset: 0,
-              limit: 50
+              limit: 10
             }
           }
         );
@@ -158,7 +158,7 @@ async function run() {
             message += `推荐 ${recommend.period === 1 ? '半场' : '全场'} 继续进球`;
             ctx.fillText(message, 30, 60);
             //战绩
-            let result = '今日：'
+            let result = '最近：'
             ctx.fillText(result, 30, 260);
             let currentDate = moment();
             let hour = currentDate.hour();
@@ -167,13 +167,8 @@ async function run() {
               currentDate = currentDate.subtract(1, 'days');
             }
 
-            let startTimestamp = moment(currentDate.format('YYYY-MM-DD 12:00:00')).unix();
             let index = 0;
             for(let historyRecommend of historyRecommendList) {
-              if(historyRecommend.match.startTimestamp < startTimestamp) {
-                break;
-              }
-
               if(historyRecommend.goalResult === 1) {
                 ctx.drawImage(winIcon, 100 + index * 25, 270, 20, 20);
                 index++;
