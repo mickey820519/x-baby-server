@@ -93,27 +93,29 @@ async function run() {
       if(res.data.code === 0) {
         let recommendList = res.data.data.recommendList;
 
-        // //mock
-        // recommendList = [
-        //   {
-        //     id: 1,
-        //     match: {
-        //       league: {
-        //         nameCn: '英超'
-        //       },
-        //       homeTeam: {
-        //         nameCn: '曼联'
-        //       },
-        //       guestTeam: {
-        //         nameCn: '曼城'
-        //       }
-        //     },
-        //     minute: '45+1',
-        //     homeTeamG: 1,
-        //     guestTeamG: 0,
-        //     period: 1
-        //   }
-        // ];
+        if(process.env.NODE_ENV === 'development') {
+          //mock
+          recommendList = [
+            {
+              id: 1,
+              match: {
+                league: {
+                  nameCn: '英超'
+                },
+                homeTeam: {
+                  nameCn: '曼联'
+                },
+                guestTeam: {
+                  nameCn: '曼城'
+                }
+              },
+              minute: '45+1',
+              homeTeamG: 1,
+              guestTeamG: 0,
+              period: 1
+            }
+          ];
+        }
 
         recommendList.sort(
           (a, b) => {
@@ -170,11 +172,11 @@ async function run() {
             let index = 0;
             for(let historyRecommend of historyRecommendList) {
               if(historyRecommend.goalResult === 1) {
-                ctx.drawImage(winIcon, 100 + index * 25, 270, 20, 20);
+                ctx.drawImage(winIcon, 100 + index * 25, 265, 20, 20);
                 index++;
               }
               else if(historyRecommend.goalResult === 0) {
-                ctx.drawImage(lostIcon, 100 + index * 25, 270, 20, 20);
+                ctx.drawImage(lostIcon, 100 + index * 25, 265, 20, 20);
                 index++;
               }
             }
